@@ -10,3 +10,9 @@
   --color-primary: #4fbf8b;
   --color-primary-dull: #44ae7c;
 }
+
+@layer base {
+  .header-section {
+    @apply text-2xl md:text-3xl font-medium;
+  }
+}
