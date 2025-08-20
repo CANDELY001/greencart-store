@@ -73,7 +73,7 @@ const Navbar = () => {
             <img src={assets.profile_icon} alt="user" className="w-10" />
             <ul className="hidden group-hover:block absolute top-10 right-0 bg-white shadow border border-gray-200 py-2.5 w-30 rounded-md text-sm z-40">
               <li
-                onClick={() => navigate("/orders")}
+                onClick={() => navigate("/my-orders")}
                 className="p-1.5 hover:bg-primary/10 cursor-pointer"
               >
                 My Orders
@@ -126,7 +126,7 @@ const Navbar = () => {
             All Products
           </NavLink>
           {user && (
-            <NavLink to="/orders" onClick={() => setOpen(false)}>
+            <NavLink to="/my-orders" onClick={() => setOpen(false)}>
               My Orders
             </NavLink>
           )}
