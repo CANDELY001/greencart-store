@@ -2,8 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { useState, createContext, useContext } from "react";
 export const AppContext = createContext();
 export const AppContextProvider = ({ children }) => {
-  const navigate = useNavigate(false);
-  const [user, setUser] = useState(true);
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
   const [isSeller, setIsSeller] = useState(false);
   const [showUserLogin, setShowUserLogin] = useState(false);
   return (
