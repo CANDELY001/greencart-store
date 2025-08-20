@@ -3,6 +3,7 @@ import MainBanner from "../components/MainBanner";
 import Categories from "../components/Categories";
 import BestSeller from "../components/BestSeller";
 import FeaturesBanner from "../components/FeaturesBanner";
+import NewLetter from "../components/NewLetter";
 
 function Home() {
   return (
@@ -11,6 +12,7 @@ function Home() {
       <Categories />
       <BestSeller />
       <FeaturesBanner />
+      <NewLetter />
     </div>
   );
 }
