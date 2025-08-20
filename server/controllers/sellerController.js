@@ -26,7 +26,7 @@ export const sellerLogin = async (req, res) => {
 };
 
 //Check Auth /api/seller/is-auth
-export const isAuth = async (req, res) => {
+export const isSellerAuth = async (req, res) => {
   try {
     return res.json({
       success: true,
@@ -38,7 +38,7 @@ export const isAuth = async (req, res) => {
 };
 
 //Logout User api/seller/logout
-export const logout = async (req, res) => {
+export const sellerLogout = async (req, res) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
