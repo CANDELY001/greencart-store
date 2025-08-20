@@ -56,6 +56,26 @@ export const AppContextProvider = ({ children }) => {
     toast.success("Cart updated");
   };
 
+  //Get Cart Items Count
+  const getCartCount = () => {
+    let count = 0;
+    for (const item in cartItems) {
+      count += cartItems[item];
+    }
+    return count;
+  };
+  // Get Cart Total Price
+  const getCartAmount = () => {
+    let total = 0;
+    for (const item in cartItems) {
+      let itemInfo = products.find((product) => product.id === item);
+      if (cartItems[item] > 0) {
+        total += itemInfo.offerPrice * cartItems[item];
+      }
+    }
+    return total;
+  };
+
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -77,6 +97,8 @@ export const AppContextProvider = ({ children }) => {
         removeFromCart,
         searchQuery,
         setSearchQuery,
+        getCartCount,
+        getCartAmount,
       }}
     >
       {children}
