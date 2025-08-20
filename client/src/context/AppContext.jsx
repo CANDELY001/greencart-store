@@ -9,9 +9,10 @@ export const AppContextProvider = ({ children }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [isSeller, setIsSeller] = useState(false);
-  const [showUserLogin, setShowUserLogin] = useState(true);
+  const [showUserLogin, setShowUserLogin] = useState(false);
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState({});
+  const [searchQuery, setSearchQuery] = useState({});
 
   {
     /* Fetch products from data*/
@@ -74,6 +75,8 @@ export const AppContextProvider = ({ children }) => {
         updateCartItem,
         cartItems,
         removeFromCart,
+        searchQuery,
+        setSearchQuery,
       }}
     >
       {children}
