@@ -17,12 +17,30 @@ export const AppContextProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState({});
   const [searchQuery, setSearchQuery] = useState({});
+  // Fetch seller data
+  const fetchSeller = async () => {
+    try {
+      const { data } = await axios.get("/api/seller/is-auth");
+      if (data.success) {
+        setIsSeller(true);
+      } else {
+        setIsSeller(false);
+      }
+    } catch (error) {
+      setIsSeller(false);
+    }
+  };
 
   {
     /* Fetch products from data*/
   }
   const fetchProducts = async () => {
-    setProducts(dummyProducts);
+    try {
+      const { data } = await axios.get("/api/product/list");
+      data.success ? setProducts(data.products) : toast.error(data.message);
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
   {
     /* Add product to cart */
@@ -82,6 +100,7 @@ export const AppContextProvider = ({ children }) => {
 
   useEffect(() => {
     fetchProducts();
+    fetchSeller();
   }, []);
   return (
     <AppContext.Provider
@@ -104,6 +123,7 @@ export const AppContextProvider = ({ children }) => {
         getCartCount,
         getCartAmount,
         axios,
+        fetchProducts,
       }}
     >
       {children}
