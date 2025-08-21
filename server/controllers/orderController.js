@@ -36,10 +36,13 @@ export const placeOrderCOD = async (req, res) => {
 //get Orders by User ID: /api/order/user
 export const getUserOrders = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const userId = req.user._id || req.body.userId;
+    if (!userId) {
+      return res.json({ success: false, message: "User not authenticated" });
+    }
     const orders = await Order.find({
       userId,
-      $or: [{ paymentType: "COD" }, { isPaid: true }],
+      $or: [{ paymentMethod: "COD" }, { isPaid: false }],
     })
       .populate("items.product address")
       .sort({ createdAt: -1 });
@@ -53,7 +56,7 @@ export const getUserOrders = async (req, res) => {
 export const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find({
-      $or: [{ paymentType: "COD" }, { isPaid: true }],
+      $or: [{ paymentMethod: "COD" }, { isPaid: false }],
     })
       .populate("items.product address")
       .sort({ createdAt: -1 });

@@ -23,7 +23,7 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
     category: {
-      type: Array,
+      type: String,
       required: true,
     },
     inStock: {
@@ -35,6 +35,6 @@ const productSchema = new mongoose.Schema(
 );
 
 const Product =
-  mongoose.models.product || mongoose.model("product", productSchema);
+  mongoose.models.Product || mongoose.model("Product", productSchema);
 
 export default Product;

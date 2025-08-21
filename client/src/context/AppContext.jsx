@@ -17,6 +17,7 @@ export const AppContextProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState({});
   const [searchQuery, setSearchQuery] = useState({});
+
   // Fetch seller data
   const fetchSeller = async () => {
     try {
@@ -31,20 +32,34 @@ export const AppContextProvider = ({ children }) => {
     }
   };
 
-  {
-    /* Fetch products from data*/
-  }
+  //fetch  user auth status, user data and cart items
+  const fetchUser = async () => {
+    try {
+      const { data } = await axios.get("/api/user/is-auth");
+      if (data.success) {
+        setUser(data.user);
+        setCartItems(data.user.cartItems);
+      }
+    } catch (error) {
+      setUser(null);
+    }
+  };
+
+  // /* Fetch products from data*/
   const fetchProducts = async () => {
     try {
       const { data } = await axios.get("/api/product/list");
-      data.success ? setProducts(data.products) : toast.error(data.message);
+      if (data.success) {
+        setProducts(data.products);
+      } else {
+        toast.error(data.message);
+      }
     } catch (error) {
       toast.error(error.message);
     }
   };
-  {
-    /* Add product to cart */
-  }
+
+  //   /* Add product to cart */
   const addToCart = (itemId) => {
     let cartData = structuredClone(cartItems);
     if (cartData[itemId]) {
@@ -99,9 +114,28 @@ export const AppContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    fetchUser();
     fetchProducts();
     fetchSeller();
   }, []);
+
+  //update database cart items
+  useEffect(() => {
+    const updateCart = async () => {
+      try {
+        const { data } = await axios.post("/api/cart/update", { cartItems });
+        if (!data.success) {
+          toast.error(data.message);
+        }
+      } catch (error) {
+        toast.error(error.message);
+      }
+    };
+    if (user) {
+      updateCart();
+    }
+  }, [cartItems]);
+
   return (
     <AppContext.Provider
       value={{
@@ -124,6 +158,7 @@ export const AppContextProvider = ({ children }) => {
         getCartAmount,
         axios,
         fetchProducts,
+        setCartItems,
       }}
     >
       {children}

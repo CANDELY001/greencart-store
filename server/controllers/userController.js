@@ -19,14 +19,19 @@ export const register = async (req, res) => {
       expiresIn: "7d",
     });
     res.cookie("token", token, {
-      httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
-      secure: process.env.NODE_ENV === "production", // Ensures the cookie is sent over HTTPS in production
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict", // CSRF protection
-      maxAge: 7 * 24 * 60 * 60 * 1000, // Cookies expiration time (7 days)
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     return res.json({
       success: true,
-      user: { email: user.email, name: user.name },
+      user: {
+        _id: user._id,
+        email: user.email,
+        name: user.name,
+        cartItems: user.cartItems,
+      },
     });
   } catch (error) {
     console.log(error.message);
@@ -66,7 +71,12 @@ export const login = async (req, res) => {
     });
     return res.json({
       success: true,
-      user: { email: user.email, name: user.name },
+      user: {
+        _id: user._id,
+        email: user.email,
+        name: user.name,
+        cartItems: user.cartItems,
+      },
     });
   } catch (error) {
     console.log(error.message);
@@ -80,11 +90,17 @@ export const login = async (req, res) => {
 //Check Auth /api/user/is-auth
 export const isAuth = async (req, res) => {
   try {
-    const { userId } = req.body;
-    const user = await User.findById(userId).select("-password");
+    // req.user is set by authUser middleware
+    const user = req.user;
+    if (!user) {
+      return res.json({ success: false, message: "Not authenticated" });
+    }
+    // Remove password field if present
+    const userObj = user.toObject();
+    delete userObj.password;
     return res.json({
       success: true,
-      user,
+      user: userObj,
     });
   } catch (error) {
     console.log(error.message);
