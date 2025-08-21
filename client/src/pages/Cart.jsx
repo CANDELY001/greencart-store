@@ -67,14 +67,31 @@ const Cart = () => {
           address: selectedAddress._id,
         });
         data = response.data;
-      }
-      // Add logic for online payment if needed
-      if (data && data.success) {
-        toast.success(data.message);
-        setCartItems({});
-        navigate("/my-orders");
-      } else if (data) {
-        toast.error(data.message);
+
+        if (data && data.success) {
+          toast.success(data.message);
+          setCartItems({});
+          navigate("/my-orders");
+        } else if (data) {
+          toast.error(data.message);
+        }
+      } else {
+        //Place order with Stripe
+        const response = await axios.post("/api/order/stripe", {
+          userId: user._id,
+          items: cartArray.map((item) => ({
+            product: item._id,
+            quantity: item.quantity,
+          })),
+          address: selectedAddress._id,
+        });
+        data = response.data;
+
+        if (data && data.success) {
+          window.location.replace(data.url);
+        } else if (data) {
+          toast.error(data.message);
+        }
       }
     } catch (error) {
       toast.error(error.message);
