@@ -1,4 +1,4 @@
-import jwr from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
 const authSeller = (req, res, next) => {
   const { sellerToken } = req.cookies;
