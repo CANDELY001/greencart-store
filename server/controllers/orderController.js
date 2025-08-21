@@ -1,6 +1,8 @@
 import Product from "../models/Product.js";
 import Order from "../models/Order.js";
 import stripe from "stripe";
+import { response } from "express";
+import User from "../models/User.js";
 
 //Place order COD: /api/order/cod
 export const placeOrderCOD = async (req, res) => {
@@ -99,6 +101,54 @@ export const placeOrderStripe = async (req, res) => {
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
+};
+
+//Stripe webhook to verify payement Action: /stripe
+export const stripeWebhook = async (req, res) => {
+  const stripeInstance = stripe(process.env.STRIPE_SECRET_KEY);
+  const sig = req.headers["stripe-signature"];
+  let event;
+  try {
+    event = stripeInstance.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+  } catch (error) {
+    return res.status(400).send(`Webhook Error: ${error.message}`);
+  }
+  //Handle the event
+  switch (event.type) {
+    case "payment_intent.succeeded": {
+      const paymentIntent = event.data.object;
+      const paymentIntentId = paymentIntent.id;
+      const session = await stripeInstance.checkout.sessions.list({
+        payment_intent: paymentIntentId,
+      });
+      const { orderId, userId } = session.data[0].metadata;
+      //Mark payemnt as paid
+      await Order.findByIdAndUpdate(orderId, {
+        isPaid: true,
+      });
+      //Clear user cart items
+      await User.findByIdAndUpdate(userId, { cartItems: [] });
+      break;
+    }
+    case "payment_intent.payment_failed": {
+      const paymentIntent = event.data.object;
+      const paymentIntentId = paymentIntent.id;
+      const session = await stripeInstance.checkout.sessions.list({
+        payment_intent: paymentIntentId,
+      });
+      const { orderId } = session.data[0].metadata;
+      await Order.findByIdAndUpdate(orderId);
+      break;
+    }
+    default:
+      console.log(`Unhandled event type ${event.type}`);
+      break;
+  }
+  res.json({ received: true });
 };
 
 //get Orders by User ID: /api/order/user
