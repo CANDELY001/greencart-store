@@ -32,7 +32,7 @@ const MyOrders = () => {
         >
           <p className="flex justify-between md:items-center text-gray-400 md:font-medium max-md:flex-col">
             <span>OrderId : {order._id}</span>
-            <span>Payement : {order.paymentType}</span>
+            <span>Payement : {order.paymentMethod}</span>
             <span>
               Total Amount : {currency}
               {order.amount}
